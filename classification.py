@@ -127,7 +127,7 @@ model.fit(X_train,
           y_train, 
           batch_size=256, 
           validation_data=(x_test, y_test), 
-          epochs=5, 
+          epochs=2, 
           callbacks=callbacks)
 
 # Close W&B run
@@ -167,3 +167,12 @@ print("Recall of the model is {:.2f}".format(recall_score(y_test, preds, average
 print("Precision of the model is {:.2f}".format(precision_score(y_test, preds, average='micro')))
 print("Accuracy of the model is {:.2f}".format(accuracy_score(y_test, preds)))
 
+from sklearn.metrics import f1_score
+
+# 對測試集的預測結果取最大概率對應的類別標籤
+y_pred = model.predict(x_test)
+y_pred = np.argmax(y_pred, axis=1)
+
+# 計算 f1 score
+f1 = f1_score(y_test, y_pred, average='weighted')  # 或者 average='micro' 或 'macro'
+print("F1 score: {:.2f}".format(f1))
