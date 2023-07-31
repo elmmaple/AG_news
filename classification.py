@@ -31,8 +31,8 @@ from wandb.keras import WandbCallback
 wandb.login()
 # wandb config
 WANDB_CONFIG = {
-     'competition': 'AG News Classification Dataset', 
-              '_wandb_kernel': 'neuracort'
+    'competition': 'AG News Classification Dataset', 
+    '_wandb_kernel': 'neuracort'
 }
 
 #File Path
@@ -47,6 +47,12 @@ data.columns = ['ClassIndex', 'Title', 'Description']
 testdata.columns = ['ClassIndex', 'Title', 'Description']
 
 #Combine Title and Description
+#在進行自然語言處理的文本分類任務時，通常將標題（Title）和描述（Description）合併在一起作為模型的輸入文本是一個常見的做法，這樣做的好處如下：
+# 更豐富的信息：將標題和描述合併在一起，可以提供更多的文本信息給模型，這有助於模型更好地理解文本的內容。
+# 更好的模型效果：通常情況下，使用合併後的文本作為輸入會比單獨使用標題或描述效果更好，因為模型可以從更長的文本序列中學習到更多的特徵和上下文信息。
+# 減少維度：合併標題和描述後，文本序列的長度相對較短，這樣可以減少模型的輸入維度，提高訓練效率。
+# 更好的泛化性能：合併文本可以幫助模型學習到更通用的特徵，使得模型在測試集上更好地泛化，而不會過度依賴某個特定部分的文本。
+# 總的來說，將標題和描述合併在一起可以幫助模型更好地理解文本，提高模型的效果和泛化性能。當然，根據具體任務和數據集的特點，也可以嘗試單獨使用標題或描述作為輸入進行實驗，看哪種方式效果更好。
 X_train = data['Title'] + " " + data['Description'] # Combine title and description (better accuracy than using them as separate features)
 y_train = data['ClassIndex'].apply(lambda x: x-1).values # Class labels need to begin from 0
 
@@ -96,6 +102,24 @@ model.add(GlobalMaxPooling1D()) #Pooling Layer decreases sensitivity to features
 model.add(Dense(4, activation='softmax')) #softmax is used as the activation function for multi-class classification problems where class membership is required on more than two class labels.
 model.summary()
 
+# EarlyStopping：
+
+# monitor: 監控的指標，這裡設置為 'val_accuracy'，表示監控驗證集的準確度。
+# min_delta: 當驗證指標的變化小於 min_delta 時，將被認為沒有改善。
+# patience: 在指標沒有改善的情況下，經過幾個 epoch 後停止訓練。
+# verbose: 控制是否輸出訓練過程中的信息，1 表示輸出。
+# ModelCheckpoint：
+
+# filepath: 模型的權重（weights）保存的文件路徑。
+# monitor: 監控的指標，這裡設置為 'val_accuracy'，表示監控驗證集的準確度。
+# mode: 設置為 'max' 表示監控指標的最大值，當指標達到最大值時保存模型權重。
+# save_best_only: 只保存在指標上表現最好的模型權重。
+# save_weights_only: 設置為 True 僅保存模型的權重而不保存模型結構。
+# verbose: 控制是否輸出保存模型權重的信息，1 表示輸出。
+# WandbCallback：
+
+# WandbCallback 是用於將模型訓練過程中的資訊記錄到 Weights & Biases 平台的回調函式。
+# Wandb 是一個用於跟蹤機器學習實驗的工具，可以記錄模型的準確度、損失函數、學習率等訓練過程中的指標，方便進行實驗結果的比較和分析
 callbacks = [
     EarlyStopping(     #EarlyStopping is used to stop at the epoch where val_accuracy does not improve significantly
         monitor='val_accuracy',
@@ -172,4 +196,4 @@ y_pred = np.argmax(y_pred, axis=1)
 
 # 計算 f1 score
 f1 = f1_score(y_test, y_pred, average='weighted')  # 或者 average='micro' 或 'macro'
-print("F1 score: {:.2f}".format(f1))
+print(f"F1 score:{f1:.2f}")
