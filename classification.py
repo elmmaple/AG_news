@@ -85,11 +85,12 @@ model = Sequential()
 model.add(Embedding(vocab_size, embed_size, input_length=maxlen))
 model.add(Bidirectional(LSTM(128, return_sequences=True))) 
 # Define the layers and their corresponding sizes
-layers = [64, 1024, 512, 256, 128, 64]
+layers = [1024, 512, 256, 128, 64]
 # Define the dropout rate
 dropout_rate = 0.2
 for layer_size in layers:
     model.add(Bidirectional(LSTM(layer_size, return_sequences=True)))
+    model.add(Dense(layer_size)) #softmax is used as the activation function for multi-class classification problems where class membership is required on more than two class labels.
     model.add(Dropout(dropout_rate))
 model.add(GlobalMaxPooling1D()) #Pooling Layer decreases sensitivity to features, thereby creating more generalised data for better test results.
 model.add(Dense(4, activation='softmax')) #softmax is used as the activation function for multi-class classification problems where class membership is required on more than two class labels.
