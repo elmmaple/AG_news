@@ -84,18 +84,14 @@ run = wandb.init(project='ag-news', config= WANDB_CONFIG)
 model = Sequential()
 model.add(Embedding(vocab_size, embed_size, input_length=maxlen))
 model.add(Bidirectional(LSTM(128, return_sequences=True))) 
-model.add(Bidirectional(LSTM(64, return_sequences=True)))
+# Define the layers and their corresponding sizes
+layers = [64, 1024, 512, 256, 128, 64]
+# Define the dropout rate
+dropout_rate = 0.2
+for layer_size in layers:
+    model.add(Bidirectional(LSTM(layer_size, return_sequences=True)))
+    model.add(Dropout(dropout_rate))
 model.add(GlobalMaxPooling1D()) #Pooling Layer decreases sensitivity to features, thereby creating more generalised data for better test results.
-model.add(Dense(1024))
-model.add(Dropout(0.25)) #Dropout layer nullifies certain random input values to generate a more general dataset and prevent the problem of overfitting.
-model.add(Dense(512))
-model.add(Dropout(0.25))
-model.add(Dense(256))
-model.add(Dropout(0.25))
-model.add(Dense(128))
-model.add(Dropout(0.25))
-model.add(Dense(64))
-model.add(Dropout(0.25))
 model.add(Dense(4, activation='softmax')) #softmax is used as the activation function for multi-class classification problems where class membership is required on more than two class labels.
 model.summary()
 
