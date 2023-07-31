@@ -1,0 +1,34 @@
+{
+    "os": "macOS-12.4-arm64-arm-64bit",
+    "python": "3.10.9",
+    "heartbeatAt": "2023-07-31T04:00:57.199943",
+    "startedAt": "2023-07-31T04:00:56.483464",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/cardistchien/Documents/GitHub/AG_news/classification.py",
+    "codePath": "classification.py",
+    "git": {
+        "remote": "https://github.com/elmmaple/AG_news.git",
+        "commit": null
+    },
+    "email": "zowu059438erth@gmail.com",
+    "root": "/Users/cardistchien/Documents/GitHub/AG_news",
+    "host": "CardistdeMBP",
+    "username": "cardistchien",
+    "executable": "/Users/cardistchien/anaconda3/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "disk": {
+        "total": 228.27386474609375,
+        "used": 192.74778366088867
+    },
+    "gpuapple": {
+        "type": "arm",
+        "vendor": "Apple"
+    },
+    "memory": {
+        "total": 16.0
+    }
+}
