@@ -61,7 +61,7 @@ git clone https://github.com/elmmaple/AG_news.git
    ```
    python classification.py
    ```
-3. wandb,需辦理並登入WandB帳戶,再取得api執行時需輸入
+3. 執行時,取得wandb api輸入(需辦理並登入WandB帳戶),
 (WandB套件，這是用於跟蹤機器學習實驗的工具，可以記錄模型的準確度、損失函數、學習率等訓練過程中的指標，方便進行實驗結果的比較和分析。)
 
 <div class = "second-title">數據集</div>
@@ -70,9 +70,10 @@ git clone https://github.com/elmmaple/AG_news.git
 - 數據來源 https://www.kaggle.com/datasets/amananandrai/ag-news-classification-dataset?fbclid=IwAR2VmOFQDNVGL4wrczn8-cK1rJzESm2OHwFCu10xPlSNIhuEGqefK0De6xY
 
 <div class = "second-title">程式碼結構</div>
-    wandb.login()
-<div class = "step">此程式碼用於登入WandB帳戶，使用WandB套件的前提條件，用於將模型訓練過程中的資訊記錄到WandB平台,以下是設置參數,competition比賽名稱及_wandb_kernel指定 W&B 要使用的特定內核名稱，以便在 W&B 平台上識別並運行相關實驗</div>
 
+<div class = "step">此程式碼用於登入WandB帳戶，使用WandB套件的前提條件，用於將模型訓練過程中的資訊記錄到WandB平台,以下是設置參數,competition比賽名稱及_wandb_kernel指定 W&B 要使用的特定內核名稱，以便在 W&B 平台上識別並運行相關實驗</div>
+    
+    wandb.login()
     WANDB_CONFIG = {
         'competition': 'AG News Classification Dataset', 
         '_wandb_kernel': 'neuracort'
@@ -114,7 +115,7 @@ git clone https://github.com/elmmaple/AG_news.git
     x_test = pad_sequences(x_test, maxlen=maxlen)
 
 
-<div class = "step">初始化WandB，開始跟蹤訓練過程中的指標。類</div>
+<div class = "step">初始化WandB，開始跟蹤訓練過程中的指標</div>
 
     wandb.init(project='ag-news', config= WANDB_CONFIG)
 
@@ -190,13 +191,13 @@ git clone https://github.com/elmmaple/AG_news.git
     plt.yticks(range(4), labels, fontsize=12)
     plt.show()
 
-<div class = "step">計算模型的性能指標，包括召回率（recall）、精確率（precision）和準確度（accuracy</div>
+<div class = "step">計算模型的性能指標，包括召回率（recall）、精確率（precision）和準確度（accuracy)</div>
 
     recall_score
     precision_score
     accuracy_score
     
-<div class = "step"> 計算模型的F1分數，用於評估模型的性能。計算了加權F1分數（weighted</div>
+<div class = "step"> 計算模型的F1分數，用於評估模型的性能。計算了加權F1分數（weighted)</div>
 
     from sklearn.metrics import f1_score
 
