@@ -195,5 +195,7 @@ y_pred = model.predict(x_test)
 y_pred = np.argmax(y_pred, axis=1)
 
 # 計算 f1 score
-f1 = f1_score(y_test, y_pred, average='weighted')  # 或者 average='micro' 或 'macro'
+f1 = f1_score(y_test, y_pred, average='weighted')
+print(f"F1 score:{f1:.2f}")
+f1 = f1_score(y_test, y_pred, average='micro') 
 print(f"F1 score:{f1:.2f}")
