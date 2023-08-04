@@ -1,18 +1,20 @@
-<foreignObject width="100%" height="100%">
-    <style>
-        .step {
-            color: #CCBBFF;
-        }
-        .title {
-            color: #FF5511;
-            font-size:30px;
-        }
-        .second-title {
-            color: #FFCC22;
-            font-size:25px;
-        }
-    </style>
-</foreignObject>
+ <svg>
+    <foreignObject width="100%" height="100%">
+        <style>
+            .step {
+                color: #CCBBFF;
+            }
+            .title {
+                color: #FF5511;
+                font-size:30px;
+            }
+            .second-title {
+                color: #FFCC22;
+                font-size:25px;
+            }
+        </style>
+    </foreignObject>
+</svg>
  <div class = "title">專案名稱</div>
  
 ## AG_news classification
