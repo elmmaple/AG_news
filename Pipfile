@@ -12,6 +12,7 @@ termcolor = "*"
 mlxtend = "*"
 tensorflow = "*"
 wandb = "*"
+scikit = "*"
 
 [dev-packages]
 
