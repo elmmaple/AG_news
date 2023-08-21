@@ -2,6 +2,7 @@ import torch
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertForSequenceClassification
+from torch.utils.data import DataLoader, Dataset
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
@@ -14,3 +15,22 @@ tokenizer = BertTokenizerFast('bert-base-uncased')
 model = BertForSequenceClassification('bert-base-uncased', num_labels = 4)
 device = torch.device("cuda:0" if torch.cuda.is_avaliable() else 'cpu')
 model.to(device)
+
+class AGNewsDataset(Dataset):
+    def __init__(self, data, tokenizer, max_len):
+        self.data = data
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        text = self.data["Description"].iloc[idx]
+        label = self.data["Class Index"].iloc[idx]
+        label = label - 1
+        return text, label
+
+# 創建DataLoader        
+train_dataset = AGNewsDataset(train_data, tokenizer, max_len = 128)
+train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
