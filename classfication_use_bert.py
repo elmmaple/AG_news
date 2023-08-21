@@ -4,6 +4,8 @@ import pandas as pd
 # from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
+from sklearn.metrics import f1_score
+from sklearn.metrics import recall_score
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
@@ -64,3 +66,44 @@ for inputs, labels in train_loader:
     if counter >= 20:
         break
     
+# 進行評估
+test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
+test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
+
+counter = 0
+#模型切換到評估模式
+model.eval()
+# torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
+with torch.no_grad():
+    correct = 0
+    total = 0
+    all_predictions = []
+    all_labels = []
+    for inputs, labels in test_loader:
+        inputs = tokenizer(
+                inputs,
+                max_length = 128,
+                truncation = True,
+                padding = "max_length",
+                return_tensors="pt"
+            )
+        inputs = inputs.to("cuda:0")
+        labels = labels.to("cuda:0")
+        outputs = model(**inputs)
+        predictions = torch.argmax(outputs.logits, dim=1)
+        
+        total += labels.size(0)
+        correct += (predictions == labels).sum().item()
+        
+        all_predictions.extend(predictions.cpu().numpy())
+        all_labels.extend(labels.cpu().numpy())
+        
+        counter += 1
+        if counter >= 10:
+            break
+accuracy = correct / total
+recall_per_class = recall_score(all_labels, all_predictions, average='macro')
+f1 = f1_score(all_labels, all_predictions, average='weighted')
+print("Recall per class:", recall_per_class)
+print("Test Accuracy:", accuracy)
+print("F1 Score:", f1)
