@@ -28,6 +28,8 @@
 
 - pandas
 - numpy
+- torch
+- transformers
 - matplotlib
 - termcolor
 - scikit-learn
