@@ -1,16 +1,17 @@
 import torch
 import torch.nn as nn
 import pandas as pd
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
 #載入資料
-data = pd.read_csv('data/train.csv')
+train_data = pd.read_csv('data/train.csv')
+test_data = pd.read_csv('data/test.csv')
 #切割
-train_data, test_data = train_test_split(data, textsize = 0.2, random_state = 42)
+# train_data, test_data = train_test_split(data, textsize = 0.2, random_state = 42)
 #加載分詞器和模型
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=4) 
