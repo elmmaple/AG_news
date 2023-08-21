@@ -15,7 +15,7 @@ test_data = pd.read_csv('data/test.csv')
 #加載分詞器和模型
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=4) 
-device = torch.device("cuda:0" if torch.cuda.is_avaliable() else 'cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 class AGNewsDataset(Dataset):
