@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertForSequenceClassification
@@ -37,3 +38,4 @@ train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
 #設定優化器
 optimizer = torch.optim.AdamW(model.parameters(), lr = 2e-5)
+loss_fn = nn.CrossEntropyLoss()
