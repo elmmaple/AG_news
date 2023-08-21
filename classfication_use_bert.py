@@ -34,3 +34,6 @@ class AGNewsDataset(Dataset):
 # 創建DataLoader        
 train_dataset = AGNewsDataset(train_data, tokenizer, max_len = 128)
 train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
+
+#設定優化器
+optimizer = torch.optim.AdamW(model.parameters(), lr = 2e-5)
