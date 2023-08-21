@@ -39,3 +39,27 @@ train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
 #設定優化器
 optimizer = torch.optim.AdamW(model.parameters(), lr = 2e-5)
 loss_fn = nn.CrossEntropyLoss()
+model.train()
+
+counter = 0
+
+for inputs, labels in train_loader:
+    inputs = tokenizer(
+        inputs,
+        max_length = 128,
+        truncation = True,
+        padding = "max_length",
+        return_tensors = "pt"
+    )
+    inputs = inputs.to("cuda:0")
+    labels = labels.to("cuda:0")
+    
+    optimizer.zero_grad()
+    outputs = model(**inputs)
+    loss = loss_fn(outputs.logits, labels)
+    loss.backward()
+    optimizer.step()
+    counter += 1
+    if counter >= 20:
+        break
+    
