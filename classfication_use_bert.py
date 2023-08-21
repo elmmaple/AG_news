@@ -12,8 +12,8 @@ data = pd.read_csv('data/train.csv')
 #切割
 train_data, test_data = train_test_split(data, textsize = 0.2, random_state = 42)
 #加載分詞器和模型
-tokenizer = BertTokenizerFast('bert-base-uncased')
-model = BertForSequenceClassification('bert-base-uncased', num_labels = 4)
+tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=4) 
 device = torch.device("cuda:0" if torch.cuda.is_avaliable() else 'cpu')
 model.to(device)
 
