@@ -29,7 +29,6 @@ test_data = pd.read_csv('data/test.csv')
 #加載分詞器和模型
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 bert_model = BertModel.from_pretrained('bert-base-uncased') 
-# model.to(device)
 device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 
 class TextClassfication(nn.Module):
@@ -49,6 +48,7 @@ class TextClassfication(nn.Module):
         return logits
         
 model = TextClassfication(bert_model, num_labels=4)
+model.to(device)
 
 class AGNewsDataset(Dataset):
     def __init__(self, data, tokenizer, max_len):
