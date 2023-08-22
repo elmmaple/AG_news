@@ -5,7 +5,7 @@ import pandas as pd
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import f1_score
-from sklearn.metrics import recall_score
+from sklearn.metrics import recall_score, precision_score
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
@@ -102,8 +102,12 @@ with torch.no_grad():
         if counter >= 10:
             break
 accuracy = correct / total
-recall_per_class = recall_score(all_labels, all_predictions, average='macro')
+
+precision = precision_score(all_labels, all_predictions, average='macro')
+recall = recall_score(all_labels, all_predictions, average='macro')
 f1 = f1_score(all_labels, all_predictions, average='weighted')
-print("Recall per class:", recall_per_class)
+
+print("Precision", precision)
+print("Recall:", recall)
 print("Test Accuracy:", accuracy)
 print("F1 Score:", f1)
