@@ -8,6 +8,8 @@ from transformers import BertTokenizerFast, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score, precision_score
+from tqdm import tqdm  # 引入tqdm庫
+
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
@@ -57,7 +59,8 @@ model.train()
 
 counter = 0
 
-for inputs, labels in train_loader:
+train_loader_tqdm = tqdm(train_loader, desc=f"Epoch {epoch+1}")
+for inputs, labels in train_loader_tqdm:
     inputs = tokenizer(
         inputs,
         max_length = 128,
@@ -90,7 +93,9 @@ with torch.no_grad():
     total = 0
     all_predictions = []
     all_labels = []
-    for inputs, labels in test_loader:
+        
+    test_loader_tqdm = tqdm(test_loader, desc="Evaluation")
+    for inputs, labels in test_loader_tqdm:
         inputs = tokenizer(
                 inputs,
                 max_length = 128,
