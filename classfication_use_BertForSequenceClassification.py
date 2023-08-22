@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import pandas as pd
+import random
+import numpy as np
 # from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
@@ -9,6 +11,15 @@ from sklearn.metrics import recall_score, precision_score
 # print(torch.__version__)
 # print(torch.cuda.is_available())
 
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+torch.cuda.manual_seed_all(42)
+
+if torch.cuda.is_available():
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    
 #載入資料
 train_data = pd.read_csv('data/train.csv')
 test_data = pd.read_csv('data/test.csv')
