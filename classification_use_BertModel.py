@@ -40,8 +40,8 @@ class TextClassfication(nn.Module):
         #線性層 Bert模型特徵映射分類類別數量
         self.classifier = nn.Linear(in_features = 768, out_features = num_labels)
         
-    def forward(self, input_ids, attention_mask, token_type_ids = None):
-        outputs = self.model(input_ids, attention_mask=attention_mask)
+    def forward(self, batch):
+        outputs = self.model(**batch)
         pooled_output = outputs['pooler_output']
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
@@ -87,7 +87,7 @@ for inputs, labels in train_loader:
     # labels = labels.to("cuda:0")
     
     optimizer.zero_grad()
-    outputs = model(**inputs)
+    outputs = model(inputs)
     loss = loss_fn(outputs, labels)
     loss.backward()
     optimizer.step()
@@ -118,7 +118,7 @@ with torch.no_grad():
             )
         # inputs = inputs.to("cuda:0")
         # labels = labels.to("cuda:0")
-        outputs = model(**inputs)
+        outputs = model(inputs)
         predictions = torch.argmax(outputs, dim=1)
         
         total += labels.size(0)
