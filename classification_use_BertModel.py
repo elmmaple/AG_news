@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 import pandas as pd
 # from sklearn.model_selection import train_test_split
 from transformers import BertTokenizerFast, BertModel
@@ -7,9 +8,19 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score, precision_score
 from typing import Optional
+import random
 
 # print(torch.__version__)
 # print(torch.cuda.is_available())
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+torch.cuda.manual_seed_all(42)
+
+if torch.cuda.is_available():
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    
 
 #載入資料
 train_data = pd.read_csv('data/train.csv')
@@ -29,7 +40,7 @@ class TextClassfication(nn.Module):
         #線性層 Bert模型特徵映射分類類別數量
         self.classifier = nn.Linear(in_features = 768, out_features = num_labels)
         
-    def forward(self, input_ids, attention_mask, token_type_ids=None):
+    def forward(self, input_ids, attention_mask, token_type_ids = None):
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = outputs['pooler_output']
         pooled_output = self.dropout(pooled_output)
