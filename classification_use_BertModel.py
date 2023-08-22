@@ -7,8 +7,9 @@ from transformers import BertTokenizerFast, BertModel
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score, precision_score
-from typing import Optional
 import random
+from tqdm import tqdm  # 引入tqdm庫
+
 
 # print(torch.__version__)
 # print(torch.cuda.is_available())
@@ -28,14 +29,14 @@ test_data = pd.read_csv('data/test.csv')
 #加載分詞器和模型
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 bert_model = BertModel.from_pretrained('bert-base-uncased') 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 # model.to(device)
+device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 
 class TextClassfication(nn.Module):
     def __init__(self, model, num_labels):
         super(TextClassfication, self).__init__()
         self.model = model
-        #减少神经元之间的相互依赖關係，避免模型隊訓練數據的過擬合，提高模型在未見過的數據上的泛化能力。
+        #减少神經元之間的相互依赖關係，避免模型隊訓練數據的過擬合，提高模型在未見過的數據上的泛化能力。
         self.dropout = nn.Dropout(0.1)
         #線性層 Bert模型特徵映射分類類別數量
         self.classifier = nn.Linear(in_features = 768, out_features = num_labels)
@@ -71,65 +72,71 @@ train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
 #設定優化器
 optimizer = torch.optim.AdamW(model.parameters(), lr = 2e-5)
 loss_fn = nn.CrossEntropyLoss()
+
+num_epochs = 5 
 model.train()
 
-counter = 0
+for epoch in range(num_epochs):
 
-for inputs, labels in train_loader:
-    inputs = tokenizer(
-        inputs,
-        max_length = 128,
-        truncation = True,
-        padding = "max_length",
-        return_tensors = "pt"
-    )
-    # inputs = inputs.to("cuda:0")
-    # labels = labels.to("cuda:0")
-    
-    optimizer.zero_grad()
-    outputs = model(inputs)
-    loss = loss_fn(outputs, labels)
-    loss.backward()
-    optimizer.step()
-    counter += 1
-    if counter >= 20:
-        break
-    
-# 進行評估
-test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
-test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
+    counter = 0
 
-counter = 0
-#模型切換到評估模式
-model.eval()
-# torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
-with torch.no_grad():
-    correct = 0
-    total = 0
-    all_predictions = []
-    all_labels = []
-    for inputs, labels in test_loader:
+    train_loader_tqdm = tqdm(train_loader, desc=f"Epoch {epoch+1}")
+    for inputs, labels in train_loader_tqdm:
         inputs = tokenizer(
-                inputs,
-                max_length = 128,
-                truncation = True,
-                padding = "max_length",
-                return_tensors="pt"
-            )
+            inputs,
+            max_length = 128,
+            truncation = True,
+            padding = "max_length",
+            return_tensors = "pt"
+        )
         # inputs = inputs.to("cuda:0")
         # labels = labels.to("cuda:0")
+        
+        optimizer.zero_grad()
         outputs = model(inputs)
-        predictions = torch.argmax(outputs, dim=1)
-        
-        total += labels.size(0)
-        correct += (predictions == labels).sum().item()
-        
-        all_predictions.extend(predictions.cpu().numpy())
-        all_labels.extend(labels.cpu().numpy())
-        
+        loss = loss_fn(outputs, labels)
+        loss.backward()
+        optimizer.step()
         counter += 1
         if counter >= 10:
             break
+        
+    # 進行評估
+    test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
+    test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
+
+    counter = 0
+    #模型切換到評估模式
+    model.eval()
+    # torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        all_predictions = []
+        all_labels = []
+        test_loader_tqdm = tqdm(test_loader, desc="Evaluation")
+        for inputs, labels in test_loader_tqdm:
+            inputs = tokenizer(
+                    inputs,
+                    max_length = 128,
+                    truncation = True,
+                    padding = "max_length",
+                    return_tensors="pt"
+                )
+            # inputs = inputs.to("cuda:0")
+            # labels = labels.to("cuda:0")
+            outputs = model(inputs)
+            predictions = torch.argmax(outputs, dim=1)
+            
+            total += labels.size(0)
+            correct += (predictions == labels).sum().item()
+            
+            all_predictions.extend(predictions.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+            
+            counter += 1
+            if counter >= 10:
+                break
         
 accuracy = correct / total
 precision = precision_score(all_labels, all_predictions, average='macro')
