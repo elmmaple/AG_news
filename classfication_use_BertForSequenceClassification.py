@@ -66,8 +66,8 @@ for inputs, labels in train_loader_tqdm:
         padding = "max_length",
         return_tensors = "pt"
     )
-    inputs = inputs.to("cuda:0")
-    labels = labels.to("cuda:0")
+    inputs = inputs.to(device)
+    labels = labels.to(device)
     
     optimizer.zero_grad()
     outputs = model(**inputs)
@@ -97,8 +97,8 @@ with torch.no_grad():
                 padding = "max_length",
                 return_tensors="pt"
             )
-        inputs = inputs.to("cuda:0")
-        labels = labels.to("cuda:0")
+        inputs = inputs.to(device)
+        labels = labels.to(device)
         outputs = model(**inputs)
         predictions = torch.argmax(outputs.logits, dim=1)
         
