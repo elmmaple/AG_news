@@ -56,58 +56,60 @@ train_loader = DataLoader(train_dataset, batch_size = 32, shuffle = True)
 optimizer = torch.optim.AdamW(model.parameters(), lr = 2e-5)
 loss_fn = nn.CrossEntropyLoss()
 model.train()
+num_epochs = 5
+for epoch in range(num_epochs):
 
-train_loader_tqdm = tqdm(train_loader, desc=f"Epoch {epoch+1}")
-for inputs, labels in train_loader_tqdm:
-    inputs = tokenizer(
-        inputs,
-        max_length = 128,
-        truncation = True,
-        padding = "max_length",
-        return_tensors = "pt"
-    )
-    inputs = inputs.to(device)
-    labels = labels.to(device)
-    
-    optimizer.zero_grad()
-    outputs = model(**inputs)
-    loss = loss_fn(outputs.logits, labels)
-    loss.backward()
-    optimizer.step()
-    
-# 進行評估
-test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
-test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
-
-#模型切換到評估模式
-model.eval()
-# torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
-with torch.no_grad():
-    correct = 0
-    total = 0
-    all_predictions = []
-    all_labels = []
-        
-    test_loader_tqdm = tqdm(test_loader, desc="Evaluation")
-    for inputs, labels in test_loader_tqdm:
+    train_loader_tqdm = tqdm(train_loader, desc=f"Epoch {epoch+1}")
+    for inputs, labels in train_loader_tqdm:
         inputs = tokenizer(
-                inputs,
-                max_length = 128,
-                truncation = True,
-                padding = "max_length",
-                return_tensors="pt"
-            )
+            inputs,
+            max_length = 128,
+            truncation = True,
+            padding = "max_length",
+            return_tensors = "pt"
+        )
         inputs = inputs.to(device)
         labels = labels.to(device)
+        
+        optimizer.zero_grad()
         outputs = model(**inputs)
-        predictions = torch.argmax(outputs.logits, dim=1)
+        loss = loss_fn(outputs.logits, labels)
+        loss.backward()
+        optimizer.step()
         
-        total += labels.size(0)
-        correct += (predictions == labels).sum().item()
-        
-        all_predictions.extend(predictions.cpu().numpy())
-        all_labels.extend(labels.cpu().numpy())
-        
+    # 進行評估
+    test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
+    test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
+
+    #模型切換到評估模式
+    model.eval()
+    # torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        all_predictions = []
+        all_labels = []
+            
+        test_loader_tqdm = tqdm(test_loader, desc="Evaluation")
+        for inputs, labels in test_loader_tqdm:
+            inputs = tokenizer(
+                    inputs,
+                    max_length = 128,
+                    truncation = True,
+                    padding = "max_length",
+                    return_tensors="pt"
+                )
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            outputs = model(**inputs)
+            predictions = torch.argmax(outputs.logits, dim=1)
+            
+            total += labels.size(0)
+            correct += (predictions == labels).sum().item()
+            
+            all_predictions.extend(predictions.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+            
 accuracy = correct / total
 
 precision = precision_score(all_labels, all_predictions, average='macro')
