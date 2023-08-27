@@ -78,8 +78,6 @@ model.train()
 
 for epoch in range(num_epochs):
 
-    counter = 0
-
     train_loader_tqdm = tqdm(train_loader, desc=f"Epoch {epoch+1}")
     for inputs, labels in train_loader_tqdm:
         inputs = tokenizer(
@@ -97,15 +95,11 @@ for epoch in range(num_epochs):
         loss = loss_fn(outputs, labels)
         loss.backward()
         optimizer.step()
-        counter += 1
-        if counter >= 10:
-            break
         
     # 進行評估
     test_dataset = AGNewsDataset(test_data, tokenizer, max_len = 128)
     test_loader = DataLoader(test_dataset, batch_size = 4, shuffle = False)
 
-    counter = 0
     #模型切換到評估模式
     model.eval()
     # torch.no_grad 確保不會因為不必要的計算而增加計算和記憶體負擔，減少內存使用，提高效率
@@ -133,10 +127,6 @@ for epoch in range(num_epochs):
             
             all_predictions.extend(predictions.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
-            
-            counter += 1
-            if counter >= 10:
-                break
         
 accuracy = correct / total
 precision = precision_score(all_labels, all_predictions, average='macro')
