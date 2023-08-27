@@ -4,18 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-absl-py = "==1.4.0"
 pandas = "*"
 numpy = "*"
 matplotlib = "*"
-termcolor = "*"
-mlxtend = "*"
-tensorflow = "*"
-wandb = "*"
-scikit = "*"
-torch = "==1.9.0+cu111"
-torchvision = "==0.10.0+cu111"
-torchaudio = "==0.9.0"
+torch = "*"
+transformers = "*"
+scikit-learn = "*"
+tqdm = "*"
 
 [dev-packages]
 
